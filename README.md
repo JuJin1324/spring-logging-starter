@@ -36,10 +36,32 @@
 > SLF4J 는 JCL 의 가진 문제를 해결하기 위해 클래스 로더 대신에 컴파일 시점에서 구현체를 선택하도록 변경시키기 위해 도입된 것이다. 
 
 ### 로그 파일 작성
-> 콘솔 로그의 수준을 변경하는 방법은 application.yml 과 `logback-spring.xml` 에서 설정하는 방법이 있다. 
-> application.yml 은 설정하는 난이도가 비교적 쉽지만, 실제 제품에 사용하기엔 한계가 있고 세부적인 설정이 불편하기 때문에 logback-spring.xml 로 관리하는 편이 더 좋다고 생각한다.
-> 
-> `appender`: 콘솔 혹은 파일 중 어디로 출력할 지 지정 및 콘솔에 출력되는 형식을 지정한다.  
+> 콘솔 로그의 수준을 변경하는 방법은 application.yml 과 `logback-spring.xml` 에서 설정하는 방법이 있다.   
+> application.yml 은 설정하는 난이도가 비교적 쉽지만, 실제 제품에 사용하기엔 한계가 있고 세부적인 설정이 불편하기 때문에 logback-spring.xml 로 관리하는 편이 더 좋다고 생각한다.  
+> 로그 설정 파일의 이름을 `logback-spring.xml` 로 사용시 SpringBoot 에서는 별다른 설정 없이 해당 파일을 설정파일로 사용한다.  
+> 하지만 Profile 마다 로그 설정 파일을 다르게 하고 싶어서 로그 설정 파일을 여러개로 두는 경우에는 `application.yml` 에 별도의 설정이 필요하다.  
+> 예를 들어 로그 설정 파일의 이름을 `logback-dev.xml` 로 지정한 경우 application.yml 에 다음 설정을 추가한다.
+> ```yml
+> ...
+> logging:
+>    config: classpath:logback-dev.xml
+> ```
+
+### property
+> appender 작성 시 변수로 사용할 값을 설정한다. 
+> 예시 파일에서는 일반 로그가 저장될 디렉터리 경로 및 이전 로그가 저장될 디렉터리 경로를 각각 property 로 설정하였다.  
+> ```xml
+> ...
+> <property name="logsPath">./logs</property>
+> <property name="wasLogsPath">./was-logs</property>
+> <property name="layoutPattern">[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n</property>
+> <property name="maxFileSize">10MB</property>
+> <property name="maxHistory">180</property>
+> ...
+> ```
+
+### appender
+> 콘솔 혹은 파일 중 어디로 출력할 지 지정 및 콘솔에 출력되는 형식을 지정한다.    
 > 콘솔 출력 appender 예시
 > ```xml
 > <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -55,7 +77,7 @@
 > 파일 출력 appender 예시  
 > ```xml
 > <appender name="INFO_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
->   <file>./logs/info.log</file> 
+>   <file>${LOG_DIR}/info.log</file> 
 >   <filter class="ch.qos.logback.classic.filter.LevelFilter">
 >       <level>INFO</level>
 >       <onMatch>ACCEPT</onMatch> 
@@ -65,7 +87,7 @@
 >       <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS Z, Asia/Seoul}] [%thread] %-5level %logger{35} - %msg%n</pattern>
 >   </encoder>
 >   <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
->       <fileNamePattern>./was-logs/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern> 
+>       <fileNamePattern>${WAS_LOG_DIR}/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern> 
 >       <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
 >           <maxFileSize>10MB</maxFileSize> <!-- 한 파일의 최대 용량 -->
 >       </timeBasedFileNamingAndTriggeringPolicy>
@@ -93,10 +115,11 @@
 > maxHistory: maxHistory 가 30이고, Rolling 정책을 일 단위로 하면 30일 동안만 저장되고, 월 단위로 하면 30개월간 저장된다. 
 > 예를들어 30일동안 30개의 파일이 유지됐다면 오래된 파일부터 삭제된다.  
 > `fileNamePattern` 에서 로그 파일의 이름 뒤의 날짜 패턴에 따라서 maxHistory 의 값의 단위가 결정된다.  
-> ex) `<fileNamePattern>./info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>` 인 경우 파일로 나눠지는 단위가 하루이므로 maxHistory 의 단위도 하루가 된다.  
-> ex2) `<fileNamePattern>./info.%d{yyyy-MM}.%i.log.gz</fileNamePattern>` 인 경우 파일로 나눠지는 단위가 한달이므로 maxHistory 의 단위도 한달이 된다.  
-> 
-> logger: log를 남길 대상들을 의미한다. logger와 appender의 조합으로 특정 classpath는 콘솔에 로그를 남기고, 
+> ex) `<fileNamePattern>${WAS_LOG_DIR}/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>` 인 경우 파일로 나눠지는 단위가 하루이므로 maxHistory 의 단위도 하루가 된다.  
+> ex2) `<fileNamePattern>${WAS_LOG_DIR}/info.%d{yyyy-MM}.%i.log.gz</fileNamePattern>` 인 경우 파일로 나눠지는 단위가 한달이므로 maxHistory 의 단위도 한달이 된다.  
+
+### logger
+> log를 남길 대상들을 의미한다. logger와 appender의 조합으로 특정 classpath는 콘솔에 로그를 남기고, 
 > 어떤 로그는 에러 발생시 이메일을 발송하고, 어떤 상황에서는 custom 한 로그 이벤트 처리를 할 수 있도록 다양한 처리를 가능하도록 구성할 수 있다.
 >
 > root: Root 는 최상단 logger로서 아무 설정도 안할 경우 root 의 log level에 따라 로그 이벤트를 남길지 안남길지 설정이 가능해진다.  
@@ -119,16 +142,6 @@
 > </logger>
 > ```
 
-### 커스텀 로그 설정 파일
-> 로그 설정 파일의 이름을 `logback-spring.xml` 로 사용시 SpringBoot 에서는 별다른 설정 없이 해당 파일을 설정파일로 사용한다.  
-> 하지만 Profile 마다 로그 설정 파일을 다르게 하고 싶어서 로그 설정 파일을 여러개로 두는 경우에는 `application.yml` 에 별도의 설정이 필요하다.  
-> 예를 들어 로그 설정 파일의 이름을 `logback-dev.xml` 로 지정한 경우 application.yml 에 다음 설정을 추가한다.  
-> ```yml
-> ...
-> logging:
->    config: classpath:logback-dev.xml
-> ```
-
 ### 참조사이트
 > [Logback 으로 쉽고 편리하게 로그 관리를 해볼까요? ⚙️](https://tecoble.techcourse.co.kr/post/2021-08-07-logback-tutorial/)
 > [Spring의 logging 구조와 logback에 대해 알아보자](https://velog.io/@gehwan96/logback-설정)
@@ -136,8 +149,57 @@
 ---
 
 ## Log4j2
-### TODO
+### 개요
+> log4j2는 Spring Boot에 기본으로 적용되어있는 logback 이후에 나온 라이브러리로 성능이 더 뛰어나다.  
+> 멀티스레드 환경에서 Async Logger의 경우 Logback보다 처리량이 18배 더 높고 대기 시간이 훨씬 더 짧다.
+
+### Dependency
+> ```groovy
+> ...
+> configurations {
+>     ...
+>     all {
+>         // logback 과의 충돌 방지
+>         exclude module: 'spring-boot-starter-logging'
+>     }
+>     ...
+> }
+> ...
+> dependencies {
+>     ...
+>     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+> }
+> ```
+
+### 로그 파일 작성
+> 콘솔 로그의 수준을 변경하는 방법은 application.yml 과 `log4j2.xml` 에서 설정하는 방법이 있다.
+> application.yml 은 설정하는 난이도가 비교적 쉽지만, 실제 제품에 사용하기엔 한계가 있고 세부적인 설정이 불편하기 때문에 log4j2.xml 로 관리하는 편이 더 좋다고 생각한다.
+> 로그 설정 파일의 이름을 `log4j2.xml` 로 사용시 SpringBoot 에서는 별다른 설정 없이 해당 파일을 설정파일로 사용한다.  
+> 하지만 Profile 마다 로그 설정 파일을 다르게 하고 싶어서 로그 설정 파일을 여러개로 두는 경우에는 `application.yml` 에 별도의 설정이 필요하다.  
+> 예를 들어 로그 설정 파일의 이름을 `log4j2-dev.xml` 로 지정한 경우 application.yml 에 다음 설정을 추가한다.
+> ```yml
+> ...
+> logging:
+>    config: classpath:log4j2-dev.xml
+> ```
+
+### Properties
 > TODO
+
+### Appenders
+> TODO
+> 
+> TODO: AsyncAppender
+
+### Loggers
+> TODO
+
+### 참조사이트
+> [[Spring Boot] 스프링 부트 로그 설정 (log4j2)](https://veneas.tistory.com/entry/Spring-Boot-스프링-부트-로그-설정-log4j2)
+> [Log4j 파일사이즈 및 파일갯수 세팅방법](https://woongnemonan.tistory.com/entry/Log4j-파일사이즈-및-파일갯수-세팅방법)
+> [Log4j2 LevelRangeFilter Example](https://howtodoinjava.com/log4j2/levelrangefilter-example/)
+> [Log4j2 AsyncLogger와 함께 하는 Logging 환경 구축](https://velog.io/@byeongju/Log4j2-AsyncLogger와-함께-하는-Logging-환경-구축)
+> [Log4J Async 처리하기](https://blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=ccambo69&logNo=220195518406)
 
 ---
 
