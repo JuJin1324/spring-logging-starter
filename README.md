@@ -36,7 +36,7 @@
 > SLF4J 는 JCL 의 가진 문제를 해결하기 위해 클래스 로더 대신에 컴파일 시점에서 구현체를 선택하도록 변경시키기 위해 도입된 것이다. 
 
 ### 로그 파일 작성
-> 콘솔 로그의 수준을 변경하는 방법은 application.yml 과 logback-spring.xml 에서 설정하는 방법이 있다. 
+> 콘솔 로그의 수준을 변경하는 방법은 application.yml 과 `logback-spring.xml` 에서 설정하는 방법이 있다. 
 > application.yml 은 설정하는 난이도가 비교적 쉽지만, 실제 제품에 사용하기엔 한계가 있고 세부적인 설정이 불편하기 때문에 logback-spring.xml 로 관리하는 편이 더 좋다고 생각한다.
 > 
 > `appender`: 콘솔 혹은 파일 중 어디로 출력할 지 지정 및 콘솔에 출력되는 형식을 지정한다.  
@@ -119,8 +119,19 @@
 > </logger>
 > ```
 
+### 커스텀 로그 설정 파일
+> 로그 설정 파일의 이름을 `logback-spring.xml` 로 사용시 SpringBoot 에서는 별다른 설정 없이 해당 파일을 설정파일로 사용한다.  
+> 하지만 Profile 마다 로그 설정 파일을 다르게 하고 싶어서 로그 설정 파일을 여러개로 두는 경우에는 `application.yml` 에 별도의 설정이 필요하다.  
+> 예를 들어 로그 설정 파일의 이름을 `logback-dev.xml` 로 지정한 경우 application.yml 에 다음 설정을 추가한다.  
+> ```yml
+> ...
+> logging:
+>    config: classpath:logback-dev.xml
+> ```
+
 ### 참조사이트
 > [Logback 으로 쉽고 편리하게 로그 관리를 해볼까요? ⚙️](https://tecoble.techcourse.co.kr/post/2021-08-07-logback-tutorial/)
+> [Spring의 logging 구조와 logback에 대해 알아보자](https://velog.io/@gehwan96/logback-설정)
 
 ---
 
