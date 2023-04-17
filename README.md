@@ -189,6 +189,8 @@
 ### Appenders
 > TODO
 > 
+> TODO: FileOwner, FileGroup, FilePermissions
+> 
 > TODO: AsyncAppender
 
 ### Loggers

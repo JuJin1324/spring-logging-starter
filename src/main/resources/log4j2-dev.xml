@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
     <Properties>
-        <property name="logsPath">./logs</property>
-        <property name="wasLogPath">./was-logs</property>
-        <property name="layoutPattern"
+        <Property name="logsPath">./logs</Property>
+        <Property name="wasLogPath">./was-logs</Property>
+        <Property name="layoutPattern"
                   value="[%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
-        <property name="maxFileSize">10MB</property>
-        <property name="maxHistory">180</property>
+        <Property name="maxFileSize">10MB</Property>
+        <Property name="maxHistory">180</Property>
     </Properties>
 
     <Appenders>
@@ -56,9 +56,9 @@
             <AppenderRef ref="STDOUT"/>
         </Root>
 
-        <logger name="starter.spring.logging.runner" level="INFO" additivity="false">
+        <Logger name="starter.spring.logging.runner" level="INFO" additivity="false">
             <AppenderRef ref="INFO_LOG"/>
             <AppenderRef ref="ERROR_LOG"/>
-        </logger>
+        </Logger>
     </Loggers>
 </Configuration>
