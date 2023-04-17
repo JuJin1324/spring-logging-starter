@@ -189,6 +189,9 @@
 ### Appenders
 > TODO
 > 
+> TODO: LevelRangeFilter minLevel, maxLevel 거꾸로되면 logging 동작 안함 내용 추가
+> TRACE > DEBUG > INFO > WARN > ERROR > FATAL
+> 
 > TODO: FileOwner, FileGroup, FilePermissions
 > 
 > TODO: AsyncAppender
