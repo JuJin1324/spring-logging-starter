@@ -3,3 +3,6 @@
 
 logging:
     config: classpath:log4j2-dev.xml
+    level:
+        web: debug
+        starter.spring.logging.runner: debug
