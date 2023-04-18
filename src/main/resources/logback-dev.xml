@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="logsPath">./logs</property>
-    <property name="wasLogsPath">./was-logs</property>
-    <property name="layoutPattern">[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n</property>
-    <property name="maxFileSize">10MB</property>
-    <property name="maxHistory">180</property>
+    <property name="logsPath" value="./logs"/>
+    <property name="wasLogsPath" value="./was-logs"/>
+    <property name="layoutPattern"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
+    <property name="maxFileSize" value="10MB"/>
+    <property name="maxHistory" value="180"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

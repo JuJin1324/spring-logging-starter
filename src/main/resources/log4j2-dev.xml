@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
     <Properties>
-        <Property name="logsPath">./logs</Property>
-        <Property name="wasLogPath">./was-logs</Property>
+        <Property name="logsPath" value="./logs"/>
+        <Property name="wasLogPath" value="./was-logs"/>
         <Property name="layoutPattern"
                   value="[%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
-        <Property name="maxFileSize">10MB</Property>
-        <Property name="maxHistory">180</Property>
+        <Property name="maxFileSize" value="10MB"/>
+        <Property name="maxHistory" value="180"/>
     </Properties>
 
     <Appenders>

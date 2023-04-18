@@ -52,11 +52,12 @@
 > 예시 파일에서는 일반 로그가 저장될 디렉터리 경로 및 이전 로그가 저장될 디렉터리 경로를 각각 property 로 설정하였다.  
 > ```xml
 > ...
-> <property name="logsPath">./logs</property>
-> <property name="wasLogsPath">./was-logs</property>
-> <property name="layoutPattern">[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n</property>
-> <property name="maxFileSize">10MB</property>
-> <property name="maxHistory">180</property>
+> <property name="logsPath" value="./logs"/>
+> <property name="wasLogsPath" value="./was-logs"/>
+> <property name="layoutPattern"
+>           value="[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
+> <property name="maxFileSize" value="10MB"/>
+> <property name="maxHistory" value="180"/>
 > ...
 > ```
 
