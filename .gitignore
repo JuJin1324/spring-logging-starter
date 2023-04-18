@@ -37,3 +37,4 @@ out/
 .vscode/
 /logs/error.log
 /logs/info.log
+/logs/debug.log

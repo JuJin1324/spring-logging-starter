@@ -63,10 +63,5 @@
         <Root level="INFO">
             <AppenderRef ref="STDOUT"/>
         </Root>
-
-        <Logger name="starter.spring.logging.runner" level="DEBUG" additivity="false">
-            <AppenderRef ref="ASYNC_DEBUG_LOG"/>
-            <AppenderRef ref="ASYNC_ERROR_LOG"/>
-        </Logger>
     </Loggers>
 </Configuration>

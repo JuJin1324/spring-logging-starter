@@ -142,6 +142,16 @@
 >     <appender-ref ref="ERROR_LOG"/>
 > </logger>
 > ```
+> 
+> root 와 logger 가 사용하는 appender 가 다른 경우라면 logback-spring.xml 을 통해 logger 를 따로 사용하는 것이 좋다.  
+> 하지만 root 와 logger 가 사용하는 appender 가 같은 경우에는 logback-spring.xml 에는 root 만 두고 logger 는 application.yml 에 정의하는 것이 깔끔하다.  
+> application.yml  
+> ```yaml
+> logging:
+>   level:
+>       web: debug
+>       starter.spring.logging.runner: debug
+> ```
 
 ### 참조사이트
 > [Logback 으로 쉽고 편리하게 로그 관리를 해볼까요? ⚙️](https://tecoble.techcourse.co.kr/post/2021-08-07-logback-tutorial/)
