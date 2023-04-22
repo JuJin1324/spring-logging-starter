@@ -15,7 +15,7 @@
         </Console>
 
         <RollingFile name="DEBUG_LOG">
-            <LevelRangeFilter minLevel="DEBUG" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <LevelRangeFilter minLevel="WARN" maxLevel="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
             <FileName>${logsPath}/debug.log</FileName>
             <FilePattern>${wasLogPath}/debug.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
             <PatternLayout>
@@ -62,6 +62,7 @@
     <Loggers>
         <Root level="INFO">
             <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ASYNC_DEBUG_LOG"/>
         </Root>
     </Loggers>
 </Configuration>
