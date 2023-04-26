@@ -25,9 +25,11 @@
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
-            <DefaultRolloverStrategy max="${maxHistory}" fileIndex="max">
-                <Delete basePath="${wasLogPath}" maxDepth="1">
-                    <IfFileName glob="debug.*.log.gz"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${wasLogPath}">
+                    <IfFileName glob="debug.*.log.gz">
+                        <IfAccumulatedFileCount exceeds="${maxHistory}"/>
+                    </IfFileName>
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
@@ -47,9 +49,11 @@
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
-            <DefaultRolloverStrategy max="${maxHistory}" fileIndex="max">
-                <Delete basePath="${wasLogPath}" maxDepth="1">
-                    <IfFileName glob="error.*.log.gz"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${wasLogPath}">
+                    <IfFileName glob="error.*.log.gz">
+                        <IfAccumulatedFileCount exceeds="${maxHistory}"/>
+                    </IfFileName>
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
