@@ -195,33 +195,191 @@
 > ```
 
 ### Properties
-> TODO
+> appender 작성 시 변수로 사용할 값을 설정한다.
+> 예시 파일에서는 일반 로그가 저장될 디렉터리 경로 및 이전 로그가 저장될 디렉터리 경로를 각각 Property 로 설정하였다.
+> ```xml
+> ...
+> <Proerties>
+>   <Property name="logsPath" value="./logs"/>
+>   <Property name="wasLogsPath" value="./was-logs"/>
+>   <Property name="layoutPattern"
+>             value="[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
+>   <Property name="maxFileSize" value="10MB"/>
+>   <Property name="maxHistory" value="180"/>
+> </Proerties>
+> ...
+> ```
 
 ### Appenders
-> TODO
+> ConsoleAppender: 콘솔에 로그를 출력한다.  
+> FileAppender: 파일에 로그를 저장한다.  
+> RollingFileAppender: 파일에 로그를 저장하되, 로그 파일의 크기나 날짜 등을 기준으로 파일을 자동으로 분리한다.  
+> SocketAppender: TCP/IP 소켓 통신을 통해 로그 이벤트를 원격지에 전달한다.  
+> JmsAppender: JMS(Java Message Service)를 통해 로그 이벤트를 메시지로 전송한다.  
+> KafkaAppender: Apache Kafka를 통해 로그 이벤트를 전송한다.  
+> AsyncAppender: 로그 이벤트를 비동기 방식으로 처리하며, 다른 Appender를 포함할 수 있다.  
+> 이 외에도 JDBCAppender, JPAAppender, CassandraAppender, MongoDBAppender 등이 있다.  
 > 
-> TODO: LevelRangeFilter minLevel, maxLevel 거꾸로되면 logging 동작 안함 내용 추가
-> TRACE > DEBUG > INFO > WARN > ERROR > FATAL
+> **Console Appender**  
+> ```xml
+> <Properties>
+>   ...
+>   <Property name="layoutPattern"
+>         value="[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
+> </Properties>
 > 
-> TODO: FileOwner, FileGroup, FilePermissions
+> <Appenders>
+>    <Console name="STDOUT" target="SYSTEM_OUT">
+>        <PatternLayout pattern="${layoutPattern}"/>
+>    </Console>
+>    ...
+> </Appenders>
+> ```
+> Console: 콘솔 창에 로그를 출력하기 위한 Appender 설정 시 Console 태그를 이용한다.  
+> name: appender 의 name 속성은 사용자가 임의로 지정할 수 있는 속성이다. 여기서는 편의를 위해서 STDOUT 으로 지정하였다.  
+> target: 콘솔에 출력할 appender 의 경우 `SYSTEM_OUT` 를 고정값으로 넣는다.  
+> 날짜 패턴 `%d{yyyy-MM-dd HH:mm:ss.SSS Z, Asia/Seoul}`: Z 는 타임 존을 표시한다. `, Asia/Seoul`은 표시 날짜의 타임 존을 지정한다.
+>
+> **RollingFile Appender** 
+> ```xml
+> <Properties>
+>   <Property name="logsPath" value="./logs"/>
+>   <Property name="wasLogPath" value="./was-logs"/>
+>   <Property name="layoutPattern"
+>             value="[%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
+>   <Property name="maxFileSize" value="10MB"/>
+>   <Property name="maxHistory" value="180"/>
+> </Properties>
+>  
+> <Appenders>
+>    ...
+>    <RollingFile name="DEBUG_LOG">
+>        <LevelRangeFilter minLevel="DEBUG" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+>        <FileName>${logsPath}/debug.log</FileName>
+>        <FilePattern>${wasLogPath}/debug.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
+>        <FileOwner>ec2-user</FileOwner>
+>        <FileGroup>ec2-user</FileGroup>
+>        <FilePermissions>rw-r--r--</FilePermissions>
+>        <PatternLayout>
+>            <Pattern>${layoutPattern}</Pattern>
+>        </PatternLayout>
+>        <Policies>
+>            <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+>            <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+>        </Policies>
+>        <DefaultRolloverStrategy max="${maxHistory}" fileIndex="max">
+>            <Delete basePath="${wasLogPath}" maxDepth="1">
+>                <IfFileName glob="debug.*.log.gz"/>
+>            </Delete>
+>        </DefaultRolloverStrategy>
+>    </RollingFile>
+>    
+>    <Async name="ASYNC_DEBUG_LOG" includeLocation="true">
+>       <AppenderRef ref="DEBUG_LOG"/>
+>    </Async>
+> </Appenders>
+> ```
+> RollingFile: 파일에 로그를 출력하기 위한 Appender 설정 시 RollingFile 태그를 이용한다.  
+> name: Appender 의 이름을 지정한다.  
 > 
-> TODO: AsyncAppender
+> LevelRangeFilter: Appender 가 수용할 로그 레벨을 지정한다. 
+> minLevel, maxLevel: 수용할 로그의 최소 레벨 및 최대 레벨을 지정한다. 주의할 점은 minLevel 과 maxLevel 을 
+> 반대로 입력하면 Appender 를 통한 로그 기록이 제대로 동작 안한다. 
+> 로그 레벨의 순서는 다음과 같다: FATAL(작음) < ERROR < WARN < INFO < DEBUG < TRACE(큼)  
+> 예를 들어 minLevel="ERROR" maxLevel="DEBUG" 를 설정하면 로그가 정상적으로 기록되지만, 
+> minLevel="DEBUG" maxLevel="ERROR" 로 설정하면 로그가 정상적으로 기록되지 않는다.  
+>
+> FileOwner, FileGroup, FilePermissions: 파일 권한 관련 옵션이다. 
+> 생략해도 상관없으며 Production 환경에서 설정이 필요한 경우 사용하면 될듯하다.    
+>
+> PatternLayout: 로그 메시지 패턴을 지정한다.  
+> 
+> SizeBasedTrigggeringPolicy: 파일의 사이즈를 기준으로 파일을 나눈다. 예를 들어 size="10MB" 로 설정했다고 가정하면
+> 로그 파일의 사이즈가 10MB 를 넘어가면 파일을 나눠서 다음 파일에 기록한다.  
+> 
+> TimeBasedTriggeringPolicy: 시간을 기준으로 파일을 나눈다. 여기서 interval 을 통해서 시간의 간격을 지정할 수 있는데
+> interval 의 단위는 `FilePattern`에서 지정한 최소날짜(위 예제에서는 일(day))를 기준으로 한다.  
+> 
+> DefaultRolloverStrategy: 로그 파일을 가질 최대 갯수를 지정한다.  
+> fileIndex : max로 설정 시 높은 index가 더 최신 파일이 됩니다. min으로 설정 시 작은 index가 최신 파일이 됩니다. 
+> 기존의 파일들을 rename하는 방식으로 동작합니다.  
+> min : counter 최소값. 기본값은 1입니다.  
+> max : counter 최대값. 만약 최대값에 도달하면 오래된 파일을 삭제합니다. 기본값은 7입니다.  
+> 
+> **Async Appender**  
+> 로그를 기록을 메인 스레드에서 하는 것이 아니라 로그만 출력하는 스레드를 별도로 두어 로그를 출력하기 위한 Appender 이다.
+> 
+> includeLocation: Location 정보는 일반적으로 로그 이벤트가 발생한 코드의 파일 이름, 클래스 이름, 메서드 이름, 
+> 라인 번호 등을 포함한다. 이 정보를 로그에 포함하면 디버깅이나 분석 시 로그 이벤트가 발생한 위치를 쉽게 파악할 수 있어서 유용하다.  
+> 
+> AppenderRef: Async Appender 는 기존에 만들었던 Appender 를 Async 로 동작하도록 해주는 Appender 임으로 
+> ref 를 통해서 기존에 만들었던 Appender 를 참조하도록 한다.  
 
 ### Loggers
-> TODO
+> log를 남길 대상들을 의미한다. logger와 appender의 조합으로 특정 classpath는 콘솔에 로그를 남기고,
+> 어떤 로그는 에러 발생시 이메일을 발송하고, 어떤 상황에서는 custom 한 로그 이벤트 처리를 할 수 있도록 다양한 처리를 가능하도록 구성할 수 있다.
+>
+> ```xml
+> ...
+> <Loggers>
+>     <Root level="INFO">
+>         <AppenderRef ref="STDOUT"/>
+>     </Root>
+>     <Logger name="org.springframework.web" level="DEBUG" additivity="false">
+>         <AppenderRef ref="ASYNC_DEBUG_LOG"/>
+>         <AppenderRef ref="ASYNC_ERROR_LOG"/>
+>     </Logger>
+>     <Logger name="starter.spring.logging.runner" level="DEBUG" additivity="false">
+>         <AppenderRef ref="ASYNC_DEBUG_LOG"/>
+>         <AppenderRef ref="ASYNC_ERROR_LOG"/>
+>     </Logger>
+> </Loggers>
+> ```
+> Root: Root 는 최상단 logger로서 아무 설정도 안할 경우 root 의 log level에 따라 로그 이벤트를 남길지 안남길지 설정이 가능해진다.
+> 
+> Logger: Root 보다 우선하는 특정 패키지 내의 소스코드에서 적용되는 로깅 규칙을 지정한다.  
+> Root 와 Logger 가 사용하는 Appender 가 다른 경우라면 log4j2.xml 을 통해 Logger 를 사용하는 것이 좋다.  
+> 하지만 Root 와 Logger 가 사용하는 Appender 가 같은 경우에는 log4j2.xml 에는 Root 태그만 두고 Logger 태그는 제거 후 Logger 태그의 내용은 
+> application.yml 에 정의하는 것이 깔끔하다.  
+> application.yml
+> ```yaml
+> logging:
+>   level:
+>       web: debug
+>       starter.spring.logging.runner: debug
+> ```
 
 ### 참조사이트
-> [[Spring Boot] 스프링 부트 로그 설정 (log4j2)](https://veneas.tistory.com/entry/Spring-Boot-스프링-부트-로그-설정-log4j2)
-> [Log4j 파일사이즈 및 파일갯수 세팅방법](https://woongnemonan.tistory.com/entry/Log4j-파일사이즈-및-파일갯수-세팅방법)
-> [Log4j2 LevelRangeFilter Example](https://howtodoinjava.com/log4j2/levelrangefilter-example/)
-> [Log4j2 AsyncLogger와 함께 하는 Logging 환경 구축](https://velog.io/@byeongju/Log4j2-AsyncLogger와-함께-하는-Logging-환경-구축)
-> [Log4J Async 처리하기](https://blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=ccambo69&logNo=220195518406)
+> [[Spring Boot] 스프링 부트 로그 설정 (log4j2)](https://veneas.tistory.com/entry/Spring-Boot-스프링-부트-로그-설정-log4j2)  
+> [Log4j 파일사이즈 및 파일갯수 세팅방법](https://woongnemonan.tistory.com/entry/Log4j-파일사이즈-및-파일갯수-세팅방법)  
+> [Log4j2 LevelRangeFilter Example](https://howtodoinjava.com/log4j2/levelrangefilter-example/)  
+> [Log4j2 AsyncLogger와 함께 하는 Logging 환경 구축](https://velog.io/@byeongju/Log4j2-AsyncLogger와-함께-하는-Logging-환경-구축)  
+> [Log4J Async 처리하기](https://blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=ccambo69&logNo=220195518406)  
+> [Appenders](https://logging.apache.org/log4j/2.x/manual/appenders.html)  
 
 ---
 
 ## Log 라이브러리 비교
-### 비교
-> TODO
+### Log4j2 와 Logback 비교
+> **기능**  
+> 두 라이브러리 모두 다양한 로그 수준을 지원하며, 로그를 파일이나 데이터베이스에 저장할 수 있다. 
+> 또한 로그 출력 형식을 지정할 수 있다. 그러나 log4j2는 logback보다 더욱 세밀한 로깅 제어와 유연한 로그 분배 기능을 제공한다.
+> 
+> **설정 파일**  
+> logback은 XML 또는 Groovy 기반의 설정 파일을 지원하며, log4j2는 XML, JSON, YAML 등 다양한 형식의 설정 파일을 지원한다.  
+> 
+> **성능**   
+> log4j2는 멀티 스레드 환경에서 더욱 빠른 로그 처리 속도를 보인다. 또한 메모리 사용량도 logback보다 적다.  
+> 
+> **유연성**  
+> log4j2는 로깅 시스템 자체가 모듈화되어 있어서, 원하는 로깅 구성 요소를 선택하여 구성할 수 있다. 
+> 이를 통해 개발자는 필요한 로깅 기능만 선택하여 사용할 수 있다.
+> 
+> **지원**   
+> logback은 Spring Framework의 공식 로깅 라이브러리로 사용되며, 많은 개발자들이 사용하고 있다. 
+> 그러나 log4j2는 최근에 업데이트되어 많은 기능과 최신 기술을 지원한다.  
+> 결론적으로, logback은 간단하고 쉽게 설정할 수 있으며, Spring Framework와의 연동성이 뛰어나다는 장점이 있다. 
+> 반면에 log4j2는 logback보다 더욱 유연하고 성능이 우수하며, 다양한 설정 파일 형식과 모듈화된 로깅 시스템을 제공한다는 장점이 있다.  
 
 ---
 

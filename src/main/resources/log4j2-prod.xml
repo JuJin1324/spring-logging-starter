@@ -14,12 +14,15 @@
             <LevelRangeFilter minLevel="WARN" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <FileName>${logsPath}/info.log</FileName>
             <FilePattern>${wasLogPath}/info.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
+            <FileOwner>ec2-user</FileOwner>
+            <FileGroup>ec2-user</FileGroup>
+            <FilePermissions>rw-r--r--</FilePermissions>
             <PatternLayout>
                 <Pattern>${layoutPattern}</Pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
-                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
             <DefaultRolloverStrategy>
                 <Delete basePath="${wasLogPath}">
@@ -29,6 +32,10 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
+
+        <Async name="ASYNC_INFO_LOG" includeLocation="true">
+            <AppenderRef ref="INFO_LOG"/>
+        </Async>
 
         <RollingFile name="ERROR_LOG">
             <LevelRangeFilter minLevel="FATAL" maxLevel="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -49,12 +56,16 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
+
+        <Async name="ASYNC_ERROR_LOG" includeLocation="true">
+            <AppenderRef ref="ERROR_LOG"/>
+        </Async>
     </Appenders>
 
     <Loggers>
         <Root level="INFO">
-            <AppenderRef ref="INFO_LOG"/>
-            <AppenderRef ref="ERROR_LOG" level="ERROR"/>
+            <AppenderRef ref="ASYNC_INFO_LOG"/>
+            <AppenderRef ref="ASYNC_ERROR_LOG" level="ERROR"/>
         </Root>
     </Loggers>
 </Configuration>
