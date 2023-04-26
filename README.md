@@ -267,11 +267,13 @@
 >            <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
 >            <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
 >        </Policies>
->        <DefaultRolloverStrategy max="${maxHistory}" fileIndex="max">
->            <Delete basePath="${wasLogPath}" maxDepth="1">
->                <IfFileName glob="debug.*.log.gz"/>
->            </Delete>
->        </DefaultRolloverStrategy>
+>       <DefaultRolloverStrategy>
+>           <Delete basePath="${wasLogPath}">
+>               <IfFileName glob="debug.*.log.gz">
+>                   <IfAccumulatedFileCount exceeds="${maxHistory}"/>
+>               </IfFileName>
+>           </Delete>
+>       </DefaultRolloverStrategy>
 >    </RollingFile>
 >    
 >    <Async name="ASYNC_DEBUG_LOG" includeLocation="true">
@@ -301,10 +303,7 @@
 > interval 의 단위는 `FilePattern`에서 지정한 최소날짜(위 예제에서는 일(day))를 기준으로 한다.  
 > 
 > DefaultRolloverStrategy: 로그 파일을 가질 최대 갯수를 지정한다.  
-> fileIndex : max로 설정 시 높은 index가 더 최신 파일이 됩니다. min으로 설정 시 작은 index가 최신 파일이 됩니다. 
-> 기존의 파일들을 rename하는 방식으로 동작합니다.  
-> min : counter 최소값. 기본값은 1입니다.  
-> max : counter 최대값. 만약 최대값에 도달하면 오래된 파일을 삭제합니다. 기본값은 7입니다.  
+> TODO
 > 
 > **Async Appender**  
 > 로그를 기록을 메인 스레드에서 하는 것이 아니라 로그만 출력하는 스레드를 별도로 두어 로그를 출력하기 위한 Appender 이다.
