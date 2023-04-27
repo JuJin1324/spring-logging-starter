@@ -303,7 +303,7 @@
 > interval 의 단위는 `FilePattern`에서 지정한 최소날짜(위 예제에서는 일(day))를 기준으로 한다.  
 > 
 > DefaultRolloverStrategy: 로그 파일을 가질 최대 갯수를 지정한다.  
-> TODO
+> 시간베이스 외의 경우는 이 요소의 max 값이 동작히나 시간베이스인 경우 동작하지 않아서 찾아보니 시간베이스인 경우에는 Delete 정책을 넣어줘야한다.
 > 
 > **Async Appender**  
 > 로그를 기록을 메인 스레드에서 하는 것이 아니라 로그만 출력하는 스레드를 별도로 두어 로그를 출력하기 위한 Appender 이다.
@@ -379,15 +379,3 @@
 > 그러나 log4j2는 최근에 업데이트되어 많은 기능과 최신 기술을 지원한다.  
 > 결론적으로, logback은 간단하고 쉽게 설정할 수 있으며, Spring Framework와의 연동성이 뛰어나다는 장점이 있다. 
 > 반면에 log4j2는 logback보다 더욱 유연하고 성능이 우수하며, 다양한 설정 파일 형식과 모듈화된 로깅 시스템을 제공한다는 장점이 있다.  
-
----
-
-## Log for Amazon S3
-### TODO
-> TODO
-
----
-
-## Log for Amazon CloudWatch
-### TODO
-> TODO
