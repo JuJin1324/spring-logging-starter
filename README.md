@@ -55,7 +55,7 @@
 > <property name="logsPath" value="./logs"/>
 > <property name="wasLogsPath" value="./was-logs"/>
 > <property name="layoutPattern"
->           value="[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
+>           value="[%d{yyyy-MM-dd HH:mm:ss.SSS z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
 > <property name="maxFileSize" value="10MB"/>
 > <property name="maxHistory" value="180"/>
 > ...
@@ -67,13 +67,13 @@
 > ```xml
 > <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 >   <encoder>
->      <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS Z, Asia/Seoul}][%thread] %-5level %logger{36} - %msg%n</pattern>
+>      <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS z,Asia/Seoul}][%thread] %-5level %logger{36} - %msg%n</pattern>
 >   </encoder>
 > </appender>
 > ```
 > name: appender 의 name 속성은 사용자가 임의로 지정할 수 있는 속성이다. 여기서는 편의를 위해서 STDOUT 으로 지정하였다.  
 > class: 콘솔에 출력할 appender 의 경우 `ch.qos.logback.core.ConsoleAppender` 를 고정값으로 넣는다.  
-> 날짜 패턴 `%d{yyyy-MM-dd HH:mm:ss.SSS Z, Asia/Seoul}`: Z 는 타임 존을 표시한다. `, Asia/Seoul`은 표시 날짜의 타임 존을 지정한다.  
+> 날짜 패턴 `%d{yyyy-MM-dd HH:mm:ss.SSS z,Asia/Seoul}`: Z 는 타임 존을 표시한다. `,Asia/Seoul`은 표시 날짜의 타임 존을 지정한다.  
 > 
 > 파일 출력 appender 예시  
 > ```xml
@@ -85,7 +85,7 @@
 >       <onMismatch>DENY</onMismatch> 
 >   </filter> 
 >   <encoder>
->       <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS Z, Asia/Seoul}] [%thread] %-5level %logger{35} - %msg%n</pattern>
+>       <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS z,Asia/Seoul}] [%thread] %-5level %logger{35} - %msg%n</pattern>
 >   </encoder>
 >   <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 >       <fileNamePattern>${WAS_LOG_DIR}/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern> 
@@ -203,7 +203,7 @@
 >   <Property name="logsPath" value="./logs"/>
 >   <Property name="wasLogsPath" value="./was-logs"/>
 >   <Property name="layoutPattern"
->             value="[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
+>             value="[%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
 >   <Property name="maxFileSize" value="10MB"/>
 >   <Property name="maxHistory" value="180"/>
 > </Proerties>
@@ -225,7 +225,7 @@
 > <Properties>
 >   ...
 >   <Property name="layoutPattern"
->         value="[%d{yyyy-MM-dd HH:mm:ss.SSS Z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
+>         value="[%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
 > </Properties>
 > 
 > <Appenders>
@@ -238,7 +238,7 @@
 > Console: 콘솔 창에 로그를 출력하기 위한 Appender 설정 시 Console 태그를 이용한다.  
 > name: appender 의 name 속성은 사용자가 임의로 지정할 수 있는 속성이다. 여기서는 편의를 위해서 STDOUT 으로 지정하였다.  
 > target: 콘솔에 출력할 appender 의 경우 `SYSTEM_OUT` 를 고정값으로 넣는다.  
-> 날짜 패턴 `%d{yyyy-MM-dd HH:mm:ss.SSS Z, Asia/Seoul}`: Z 는 타임 존을 표시한다. `, Asia/Seoul`은 표시 날짜의 타임 존을 지정한다.
+> 날짜 패턴 `%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}`: Z 는 타임 존을 표시한다. `{Asia/Seoul}`은 표시 날짜의 타임 존을 지정한다.
 >
 > **RollingFile Appender** 
 > ```xml
