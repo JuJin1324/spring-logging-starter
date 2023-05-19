@@ -57,7 +57,7 @@
 > <property name="layoutPattern"
 >           value="[%d{yyyy-MM-dd HH:mm:ss.SSS z,Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
 > <property name="maxFileSize" value="10MB"/>
-> <property name="maxHistory" value="180"/>
+> <property name="maxDuration" value="180"/>
 > ...
 > ```
 
@@ -205,7 +205,7 @@
 >   <Property name="layoutPattern"
 >             value="[%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
 >   <Property name="maxFileSize" value="10MB"/>
->   <Property name="maxHistory" value="180"/>
+>   <Property name="maxDuration" value="P180D"/>
 > </Proerties>
 > ...
 > ```
@@ -248,7 +248,7 @@
 >   <Property name="layoutPattern"
 >             value="[%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
 >   <Property name="maxFileSize" value="10MB"/>
->   <Property name="maxHistory" value="180"/>
+>   <Property name="maxDuration" value="P180D"/>
 > </Properties>
 >  
 > <Appenders>
@@ -270,7 +270,7 @@
 >       <DefaultRolloverStrategy>
 >           <Delete basePath="${wasLogPath}">
 >               <IfFileName glob="debug.*.log.gz">
->                   <IfAccumulatedFileCount exceeds="${maxHistory}"/>
+>                   <IfLastModified age="${maxDuration}"/>
 >               </IfFileName>
 >           </Delete>
 >       </DefaultRolloverStrategy>
@@ -303,7 +303,13 @@
 > interval 의 단위는 `FilePattern`에서 지정한 최소날짜(위 예제에서는 일(day))를 기준으로 한다.  
 > 
 > DefaultRolloverStrategy: 로그 파일을 가질 최대 갯수를 지정한다.  
-> 시간베이스 외의 경우는 이 요소의 max 값이 동작히나 시간베이스인 경우 동작하지 않아서 찾아보니 시간베이스인 경우에는 Delete 정책을 넣어줘야한다.
+> 시간베이스 외의 경우는 이 요소의 max 값이 동작히나 시간베이스인 경우 동작하지 않아서 찾아보니 시간베이스인 경우에는 Delete 정책을 넣어줘야한다.  
+> `IfLastModified` 태그를 사용하는 경우 age 에는 Duration 값이 들어가야하는데, 예시는 다음과 같다.  
+> "PT20S" -- parses as "20 seconds"  
+> "PT15M"     -- parses as "15 minutes" (where a minute is 60 seconds)  
+> "PT10H"     -- parses as "10 hours" (where an hour is 3600 seconds)  
+> "P2D"       -- parses as "2 days" (where a day is 24 hours or 86400 seconds)  
+> "P2DT3H4M"  -- parses as "2 days, 3 hours and 4 minutes"  
 > 
 > **Async Appender**  
 > 로그를 기록을 메인 스레드에서 하는 것이 아니라 로그만 출력하는 스레드를 별도로 두어 로그를 출력하기 위한 Appender 이다.

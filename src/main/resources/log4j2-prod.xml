@@ -6,7 +6,7 @@
         <Property name="layoutPattern"
                   value="[%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
         <Property name="maxFileSize" value="10MB"/>
-        <Property name="maxHistory" value="180"/>
+        <Property name="maxDuration" value="P180D"/>
     </Properties>
 
     <Appenders>
@@ -22,12 +22,12 @@
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
-                <TimeBasedTriggeringPolicy interval="1"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
             <DefaultRolloverStrategy>
                 <Delete basePath="${wasLogPath}">
                     <IfFileName glob="info.*.log.gz">
-                        <IfAccumulatedFileCount exceeds="${maxHistory}"/>
+                        <IfLastModified age="${maxDuration}"/>
                     </IfFileName>
                 </Delete>
             </DefaultRolloverStrategy>
@@ -51,7 +51,7 @@
             <DefaultRolloverStrategy>
                 <Delete basePath="${wasLogPath}">
                     <IfFileName glob="error.*.log.gz">
-                        <IfAccumulatedFileCount exceeds="${maxHistory}"/>
+                        <IfLastModified age="${maxDuration}"/>
                     </IfFileName>
                 </Delete>
             </DefaultRolloverStrategy>

@@ -2,11 +2,11 @@
 <Configuration>
     <Properties>
         <Property name="logsPath" value="./logs"/>
-        <Property name="wasLogPath" value="./was-logs"/>
+        <Property name="wasLogsPath" value="./was-logs"/>
         <Property name="layoutPattern"
                   value="[%d{yyyy-MM-dd HH:mm:ss.SSS z}{Asia/Seoul}] [%thread] %-5level %logger{36} - %msg%n"/>
         <Property name="maxFileSize" value="10MB"/>
-        <Property name="maxHistory" value="180"/>
+        <Property name="maxDuration" value="P180D"/>
     </Properties>
 
     <Appenders>
@@ -17,7 +17,7 @@
         <RollingFile name="DEBUG_LOG">
             <LevelRangeFilter minLevel="WARN" maxLevel="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
             <FileName>${logsPath}/debug.log</FileName>
-            <FilePattern>${wasLogPath}/debug.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
+            <FilePattern>${wasLogsPath}/debug.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
             <PatternLayout>
                 <Pattern>${layoutPattern}</Pattern>
             </PatternLayout>
@@ -26,9 +26,9 @@
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
             <DefaultRolloverStrategy>
-                <Delete basePath="${wasLogPath}">
+                <Delete basePath="${wasLogsPath}">
                     <IfFileName glob="debug.*.log.gz">
-                        <IfAccumulatedFileCount exceeds="${maxHistory}"/>
+                        <IfLastModified age="${maxDuration}"/>
                     </IfFileName>
                 </Delete>
             </DefaultRolloverStrategy>
@@ -41,7 +41,7 @@
         <RollingFile name="ERROR_LOG">
             <LevelRangeFilter minLevel="FATAL" maxLevel="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
             <FileName>${logsPath}/error.log</FileName>
-            <FilePattern>${wasLogPath}/error.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
+            <FilePattern>${wasLogsPath}/error.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
             <PatternLayout>
                 <Pattern>${layoutPattern}</Pattern>
             </PatternLayout>
@@ -50,9 +50,9 @@
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
             <DefaultRolloverStrategy>
-                <Delete basePath="${wasLogPath}">
+                <Delete basePath="${wasLogsPath}">
                     <IfFileName glob="error.*.log.gz">
-                        <IfAccumulatedFileCount exceeds="${maxHistory}"/>
+                        <IfLastModified age="${maxDuration}"/>
                     </IfFileName>
                 </Delete>
             </DefaultRolloverStrategy>
