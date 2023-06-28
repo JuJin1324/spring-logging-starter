@@ -120,15 +120,15 @@
 > ex2) `<fileNamePattern>${WAS_LOG_DIR}/info.%d{yyyy-MM}.%i.log.gz</fileNamePattern>` 인 경우 파일로 나눠지는 단위가 한달이므로 maxHistory 의 단위도 한달이 된다.  
 
 ### logger
-> log를 남길 대상들을 의미한다. logger와 appender의 조합으로 특정 classpath는 콘솔에 로그를 남기고, 
-> 어떤 로그는 에러 발생시 이메일을 발송하고, 어떤 상황에서는 custom 한 로그 이벤트 처리를 할 수 있도록 다양한 처리를 가능하도록 구성할 수 있다.
+> log를 남길 대상들을 의미한다. logger와 appender의 조합으로 특정 classpath(패키지 구조)는 콘솔에 로그를 남기고, 
+어떤 로그는 에러 발생시 이메일을 발송하고, 어떤 상황에서는 custom 한 로그 이벤트 처리를 할 수 있도록 다양한 처리를 가능하도록 구성할 수 있다.
 >
 > root: Root 는 최상단 logger로서 아무 설정도 안할 경우 root 의 log level에 따라 로그 이벤트를 남길지 안남길지 설정이 가능해진다.  
 > 
 > 예시)
 > ```xml
 > ...
-> <root level="DEBUG"> <!-- 모든 logger 와 관계 없이 로그 레벨이 DEBUG 이면 아래 STDOUT appender 를 통해 로그를 출력한다. -->
+> <root level="DEBUG"> <!-- 로그 레벨이 DEBUG 이면 logger 와 관계없이 아래 STDOUT appender 를 통해 로그를 출력한다. -->
 >     <appender-ref ref="STDOUT"/>
 > </root>
 >
