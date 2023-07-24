@@ -254,7 +254,7 @@
 > <Appenders>
 >    ...
 >    <RollingFile name="DEBUG_LOG">
->        <LevelRangeFilter minLevel="DEBUG" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+>        <LevelRangeFilter minLevel="INFO" maxLevel="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
 >        <FileName>${logsPath}/debug.log</FileName>
 >        <FilePattern>${wasLogPath}/debug.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
 >        <FileOwner>ec2-user</FileOwner>
@@ -284,19 +284,19 @@
 > RollingFile: 파일에 로그를 출력하기 위한 Appender 설정 시 RollingFile 태그를 이용한다.  
 > name: Appender 의 이름을 지정한다.  
 > 
-> LevelRangeFilter: Appender 가 수용할 로그 레벨을 지정한다. 
+> LevelRangeFilter: Appender 가 수용할 로그 레벨을 지정한다.  
 > minLevel, maxLevel: 수용할 로그의 최소 레벨 및 최대 레벨을 지정한다. 주의할 점은 minLevel 과 maxLevel 을 
 > 반대로 입력하면 Appender 를 통한 로그 기록이 제대로 동작 안한다. 
 > 로그 레벨의 순서는 다음과 같다: FATAL(작음) < ERROR < WARN < INFO < DEBUG < TRACE(큼)  
 > 예를 들어 minLevel="ERROR" maxLevel="DEBUG" 를 설정하면 로그가 정상적으로 기록되지만, 
 > minLevel="DEBUG" maxLevel="ERROR" 로 설정하면 로그가 정상적으로 기록되지 않는다.  
->
+> 
 > FileOwner, FileGroup, FilePermissions: 파일 권한 관련 옵션이다. 
 > 생략해도 상관없으며 Production 환경에서 설정이 필요한 경우 사용하면 될듯하다.    
 >
 > PatternLayout: 로그 메시지 패턴을 지정한다.  
 > 
-> SizeBasedTrigggeringPolicy: 파일의 사이즈를 기준으로 파일을 나눈다. 예를 들어 size="10MB" 로 설정했다고 가정하면
+> SizeBasedTriggeringPolicy: 파일의 사이즈를 기준으로 파일을 나눈다. 예를 들어 size="10MB" 로 설정했다고 가정하면
 > 로그 파일의 사이즈가 10MB 를 넘어가면 파일을 나눠서 다음 파일에 기록한다.  
 > 
 > TimeBasedTriggeringPolicy: 시간을 기준으로 파일을 나눈다. 여기서 interval 을 통해서 시간의 간격을 지정할 수 있는데
