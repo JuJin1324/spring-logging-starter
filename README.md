@@ -385,3 +385,139 @@
 > 그러나 log4j2는 최근에 업데이트되어 많은 기능과 최신 기술을 지원한다.  
 > 결론적으로, logback은 간단하고 쉽게 설정할 수 있으며, Spring Framework와의 연동성이 뛰어나다는 장점이 있다. 
 > 반면에 log4j2는 logback보다 더욱 유연하고 성능이 우수하며, 다양한 설정 파일 형식과 모듈화된 로깅 시스템을 제공한다는 장점이 있다.  
+
+---
+
+## 로깅 전략
+### 로깅 레벨 별 전략
+> **ERROR**   
+> '개발팀이 의도하지 않은 오류로 인해 요청과 응답이 정상적으로 이루어지지 않은 경우' 해당 레벨의 로그를 남긴다.
+> 
+> (예시)
+> * NPE가 적절히 처리되지 못하고 컨트롤러를 넘어 ExceptionHandler까지 넘어온 경우
+> * IAE 등의 기본 JDK 예외가 적절히 처리되지 못하고 컨트롤러를 넘어 ExceptionHandler까지 넘어온 경우
+> * (이돈이면 팀에서는 기본 JDK 대신 적절한 커스텀 예외만 던지기로 합의했어요)
+> * 사용자의 잘못으로 일어나지 않은 StackOverFlowException, IOException 등의 예외
+> * 그 외 응답 코드로 internal server error에 해당하는 500 코드를 응답하는 모든 예외 상황
+>
+> **WARN**  
+> '당장 오류 상황이 아니거나 처리 가능한 오류상황이지만, 향후 시스템 에러로 이어질 수 있는 경우' 해당 레벨의 로그를 남긴다.  
+>
+> (예시)
+> * 한 페이지당 20개의 게시글을 조회하는데, 사용자가 스크롤을 계속 내려 게시글을 1000개 이상 조회하는 경우
+> -> 메모리에 게시글 엔티티가 너무 많이 쌓이면 메모리 부족 현상이 일어날 수 있으므로 경고 상황
+> * 사내 서비스가 아닌 외부 API 서비스의 호출을 100% 성공하도록 관리하는 것은 불가능하다.
+> 따라서 외부 API 호출의 일정 비율이 실패하는 것이 일상인 것을 어느정도 전제해야 한다.
+> 
+> **INFO**  
+> '일반적인 사용자 요청과 응답의 요약, 또는 개발자가 의도한 오류 상황이 발생한 경우' 해당 레벨의 로그를 남긴다.  
+>
+> (예시)
+> * 성공적인 API 요청과 응답이 오가는 경우
+> * 400, 401 등 사용자의 잘못된 요청으로 인한 의도된 오류를 발생시키는 경우
+> 
+> **DEBUG, TRACE**  
+> INFO에서 다루는 API의 세부 정보(HTTP 코드, SQL 쿼리 등)이 필요한 경우에 주로 해당 레벨의 로그를 남기는데,
+> 이 레벨의 로그는 보통 운영 환경에서는 사용하지 않고 개발용 로컬 환경에서 자주 사용한다.  
+> 하지만 로컬 환경에서만 기록하는 로그라면, IntelliJ의 디버깅 기능으로 충분히 정보를 얻을 수 있는데 굳이 DEBUG 로그를 관리할 필요가 없어 보이니, 
+> DEBUG 레벨의 로깅은 하지 않기도 한다.  
+
+### 로그 내용
+> **공통**  
+> * 요청 시간(timestamp)
+> * 로깅용 멤버 식별자
+> * 요청 URL
+> 
+> **ERROR**  
+> * 에러 메시지
+> * stackTrace
+> 
+> **WARN**  
+> * 경고 메시지(가능한 상세히)
+> 
+> **INFO**  
+> * 응답 코드
+> * ReponseBody
+> * (에러 응답인 경우) 에러 코드
+
+### 형태
+> 로그의 내용을 한줄로 나열하는 방식을 그대로 사용하게 되면 눈이 아프고 내용 파악이 힘들기 때문에 조금 더 가독성 있는 형태인 JSON 형태로 구성해본다.  
+> **ERROR**
+> ```json
+> {
+>     "uri": "/image/confirm",
+>     "request-identifier": "3a76c903614e4e",
+>     "timestamp": 202307 26215824.983532 (초 아래 소수점 6자리까지),
+>     "message" : "file path not found",
+>     "stacktrace": "java.io.FileNotFoundException: C:/Users/tamagochi/abc.txt (Is a directory)
+>         at java.io.FileOutputStream.open0(Native Method)
+>         at java.io.FileOutputStream.open(FileOutputStream.java:270)
+>         at java.io.FileOutputStream.(FileOutputStream.java:213)
+>         at JavaHungry.main(JavaHungry.java:10)
+>     ..."
+> }
+> ```
+> **WARN**
+> ```json
+> {
+>     "uri": "/image/confirm",
+>     "request-identifier": "3a76c903614e4e",
+>     "timestamp": 20230726 215824.983532 (초 아래 소수점 6자리까지),
+>     "message" : "over 1,000 post loaded on memory. Concerns about exceeding memory capacity."
+>     (1,000개를 초과한 post가 메모리에 올라감. 메모리 허용량 초과 우려됨)
+> }
+> ```
+> **INFO(성공 케이스)**
+> ```json
+> {
+>     "uri": "/image/confirm",
+>     "request-identifier": "3a76c903614e4e",
+>     "timestamp": 20230726 215824.983532 (초 아래 소수점 6자리까지),
+>     "statuscode" : 201,
+>     "message": {성공시 RepsonseBody}
+> }
+> ```
+> **INFO(실패 케이스)**
+> ```json
+> {
+>     "uri": "/image/confirm",
+>     "request-identifier": "3a76c903614e4e",
+>     "timestamp": 20230726 215824.983532 (초 아래 소수점 6자리까지),
+>     "statuscode": 400,
+>     "message": {실패시 RepsonseBody}
+> }
+> ```
+
+### JSON 형태로 로그 남기기
+> **Log4J2**
+> dependencies: log4j 의 버전이 2.18.0 이상이 필요하기 때문에 2.18.0 이상의 버전으로 고정이 필요하다.  
+> ```groovy
+> dependencyManagement {
+>     imports {
+>         mavenBom 'org.apache.logging.log4j:log4j-bom:2.22.0'
+>     }
+> }
+> 
+> dependencies {
+>     ...
+>     runtimeOnly 'org.apache.logging.log4j:log4j-layout-template-json:2.22.0'
+> }
+> ```
+> LogstashJsonEventLayoutV1.json 생성: 현재 프로젝트에서 src/main/resource/LogstashJsonEventLayoutV1.json 을 참고한다.
+> 
+> log4j2.xml
+> ```xml
+> <Appenders>
+>     <Console name="STDOUT" target="SYSTEM_OUT">
+>         <JsonTemplateLayout eventTemplateUri="classpath:LogstashJsonEventLayoutV1.json"/>
+>     </Console>
+>     ...
+> </Appenders>
+> ```
+> 
+> 주의 사항: Log4J2 의 JsonTemplateLayout 의 경우 Pretty Print 를 지원하지 않기 때문에 파일에서 사람이 보기 좋게 확인하기 위한 용도 보다는 Amazon CloudWatch 에서
+> `Logs Insights` 를 통한 파싱된 로그 보기를 위해서 사용하는 것이 좋을 듯 싶다. 
+
+### 참조사이트
+> [팀 로깅 전략 세우기](https://velog.io/@idonymyeon/%ED%8C%80-%EB%A1%9C%EA%B9%85-%EC%A0%84%EB%9E%B5-%EC%84%B8%EC%9A%B0%EA%B8%B0-prnri6hn)
+> [JSON Template Layout](https://logging.apache.org/log4j/2.0/manual/json-template-layout.html)

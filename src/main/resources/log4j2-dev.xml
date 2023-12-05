@@ -11,7 +11,8 @@
 
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="${layoutPattern}"/>
+<!--            <PatternLayout pattern="${layoutPattern}"/>-->
+            <JsonTemplateLayout eventTemplateUri="classpath:LogstashJsonEventLayoutV1.json"/>
         </Console>
 
         <RollingFile name="DEBUG_LOG">
