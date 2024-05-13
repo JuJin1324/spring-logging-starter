@@ -18,5 +18,6 @@ public class LogTestRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         log.info("INFO Log");
         log.debug("DEBUG Log");
+        log.error("ERROR Log");
     }
 }

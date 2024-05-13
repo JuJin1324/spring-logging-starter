@@ -254,7 +254,7 @@
 > <Appenders>
 >    ...
 >    <RollingFile name="DEBUG_LOG">
->        <LevelRangeFilter minLevel="INFO" maxLevel="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+>        <LevelRangeFilter minLevel="INFO" maxLevel="DEBUG"/>
 >        <FileName>${logsPath}/debug.log</FileName>
 >        <FilePattern>${wasLogPath}/debug.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
 >        <FileOwner>ec2-user</FileOwner>
